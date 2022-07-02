@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,11 +48,11 @@ public class Tools {
         String str = HttpUtil.createGet(url)
                 .cookie("PHPSESSID=jmjifou28acrclhuil9oj0d5j6; kt_ips=205.198.104.201%2C46.20.109.22")
                 .header("Host", "jable.tv")
-                .setHttpProxy("127.0.0.1", 7890)
+                .setHttpProxy("192.168.6.193", 7890)
                 .execute().body();
         return str;
     }
-    public static List<String> exploreURL() {
+    public static List<String> exploreURL(int time) {
         List<String> result = new LinkedList();
         Map<String,String> header = new HashMap<>();
         header.put("Host","jable.tv");
@@ -61,8 +62,20 @@ public class Tools {
         Elements elements = doc.select(".cover-md>a");
         for (Element element : elements) {
             String url = element.attr("href");
-            System.out.println(url);
             result.add(url);
+        }
+        int n = 0;
+        int page = 1;
+        while (n<=time) {
+            String url = "https://jable.tv/new-release/?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=release_year&from=" + page +  "&_=1656735210112";
+            Document doc1 = Jsoup.parse(getHTML(url));
+            Elements elements1 = doc1.select(".cover-md>a");
+            for (Element element : elements1) {
+                String url1 = element.attr("href");
+                result.add(url1);
+            }
+            n+=24;
+            page++;
         }
         return result;
     }
@@ -91,6 +104,9 @@ public class Tools {
         result.setTitle(title.text());
         result.setTags(tag);
         return result;
+    }
+    public static void log(String str) {
+        Logger.getLogger("").fine(str);
     }
 }
 @ToString

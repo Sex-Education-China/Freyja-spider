@@ -1,27 +1,37 @@
 package org.sexedu;
 
-import cn.hutool.http.HttpUtil;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.jsoup.Jsoup;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.sexedu.Tools.*;
 
 public class Main {
     public static void main(String[] args) {
-        List<String> url = exploreURL();
+        long start = System.currentTimeMillis();
+        List<String> url = exploreURL(480);
+        int thread = 8;
+        ExecutorService executorService = Executors.newFixedThreadPool(thread);
         for (int i = 0; i < url.size(); i++) {
             String s = url.get(i);
-            Result result = getInfo(Jsoup.parse(getHTML(s)));
-            System.out.println("标题："+result.getTitle());
-            System.out.println("播放量:"+result.getView());
-            System.out.println("标签:"+result.getTags().toString());
-            System.out.println("视频地址:"+result.getVideoLink());
+            executorService.execute(() -> {
+                Result result = getInfo(Jsoup.parse(getHTML(s)));
+                log("标题" + result.getTitle());
+                log("播放量" + result.getView());
+                log("标题" + result.getTitle());
+                log("视频链接" + result.getVideoLink());
+            });
+        }
+        executorService.shutdown();
+        while (!executorService.isTerminated()) {
 
         }
+            long end = System.currentTimeMillis();
+            System.out.println("耗时：" + (end - start) + "ms");
+            System.out.println("平均耗时：" + (end - start) / 1000.0 / url.size() + "s");
     }
 }
 
