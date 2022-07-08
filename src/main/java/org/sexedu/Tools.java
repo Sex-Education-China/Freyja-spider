@@ -48,7 +48,7 @@ public class Tools {
         String str = HttpUtil.createGet(url)
                 .cookie("PHPSESSID=jmjifou28acrclhuil9oj0d5j6; kt_ips=205.198.104.201%2C46.20.109.22")
                 .header("Host", "jable.tv")
-                .setHttpProxy("192.168.6.193", 7890)
+                .setHttpProxy("127.0.0.1", 7890)
                 .execute().body();
         return str;
     }
@@ -73,11 +73,22 @@ public class Tools {
             for (Element element : elements1) {
                 String url1 = element.attr("href");
                 result.add(url1);
+                ++n;
+                if (n>time) {
+                    break;
+                }
             }
-            n+=24;
-            page++;
         }
-        return result;
+        List<String> realResult = new LinkedList();
+        int a = 0;
+        while (true) {
+            realResult.add(result.get(a));
+            a++;
+            if (a>=result.size()-25) {
+                break;
+            }
+        }
+        return realResult;
     }
     public static Result getInfo(Document doc) {
         List<String> tag = new LinkedList<>();
