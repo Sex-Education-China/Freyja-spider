@@ -54,7 +54,7 @@ public class Main {
         while (!executor.isTerminated()) {
             if (i[0] % 20 == 0) {
                 System.out.println("已爬取" + i[0] + "个视频");
-                Thread.sleep(1000*10);
+                Thread.sleep(1000*10);;
             }
         }
     }
