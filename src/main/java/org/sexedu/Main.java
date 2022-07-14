@@ -54,6 +54,8 @@ public class Main {
         while (!executor.isTerminated()) {
             if (i[0] % 20 == 0) {
                 System.out.println("已爬取" + i[0] + "个视频");
+                float time = (System.currentTimeMillis() - start) / 1000;
+                System.out.println("速度：" + (i[0] / time + "个/秒"));
                 Thread.sleep(1000*10);;
             }
         }
