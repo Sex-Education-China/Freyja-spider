@@ -18,19 +18,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
-    static String url = Base64.decodeStr("bW9uZ29kYitzcnY6Ly9hZG1pbjp0dExIS0hxM3ZDVFlnMjNAY2x1c3RlcjAubzJicjEubW9uZ29kYi5uZXQv");
-    static MongoClient client = new MongoClient(new MongoClientURI(url));
+    static final ConfigBean config = new Config().Config();
+    static MongoClient client = new MongoClient(new MongoClientURI(config.getMongoDB()));
     static MongoDatabase database = client.getDatabase("bornhub");
     static MongoCollection<Document> collection = database.getCollection("videos");
     static FindIterable<Document> findIterable = collection.find();
     static MongoCursor<Document> cursor = findIterable.iterator();
     public static void main(String[] args) throws InterruptedException {
+        new Config();
+        System.exit(0);
         long start = System.currentTimeMillis();
         //get all the collections
         MongoCollection<Document> collection = database.getCollection("videos");
         BigInteger id = BigInteger.valueOf(getMaxId(collection));
         List<String> url = Tools.exploreURL(1000);
-        ExecutorService executor = Executors.newFixedThreadPool(8);
+        ExecutorService executor = Executors.newFixedThreadPool(config.getThread());
         System.out.println("开始爬取！");
         final int[] i = {0};
         executor.execute(() -> {
@@ -39,11 +41,14 @@ public class Main {
                 String title = result.getTitle();
                 String link = result.getVideoLink().replace("\r\n", "");
                 String tag = result.getTags().toString();
+                String preview = result.getPreview();
+                System.out.println(preview);
                 if (!contains(title)) {
                     Document document = new Document("id", id.toString())
                             .append("title", title)
                             .append("link", link)
-                            .append("tag", tag);
+                            .append("tag", tag)
+                            .append("preview", preview);
                     collection.insertOne(document);
                     id.add(BigInteger.valueOf(1));
                 }

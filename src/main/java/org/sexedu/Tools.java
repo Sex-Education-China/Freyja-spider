@@ -48,7 +48,7 @@ public class Tools {
         String str = HttpUtil.createGet(url)
                 .cookie("PHPSESSID=jmjifou28acrclhuil9oj0d5j6; kt_ips=205.198.104.201%2C46.20.109.22")
                 .header("Host", "jable.tv")
-                .setHttpProxy("127.0.0.1", 7890)
+                //.setHttpProxy("127.0.0.1", 7890)
                 .execute().body();
         return str;
     }
@@ -110,10 +110,12 @@ public class Tools {
                 break;
             }
         }
+        String preview = doc.select("video").attr("poster");
         result.setVideoLink(url);
         result.setView(view);
         result.setTitle(title.text());
         result.setTags(tag);
+        result.setPreview(preview);
         return result;
     }
     public static void log(String str) {
@@ -128,4 +130,5 @@ class Result {
     private String title;
     private int view;
     private String videoLink;
+    private String preview;
 }
